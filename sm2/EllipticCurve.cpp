@@ -930,7 +930,6 @@ bool CEllipticCurve::CheckPoint(const CMpi &x, const CMpi &y) {
 
     CMpl right = y.FastSquare();
     right %= g_paramFieldP.m_oModulus;
-
     if (right.l == left.l)
         return true;
     else
@@ -1311,7 +1310,6 @@ int CECCPublicKey::SetPublicKey(const unsigned char *pKey, int iLen) {
 
     m_pntPx.Import(pKey, g_paramFieldP.GetLengthInBytes());
     m_pntPy.Import(pKey + g_paramFieldP.GetLengthInBytes(), g_paramFieldP.GetLengthInBytes());
-
     return CheckPoint(m_pntPx, m_pntPy);
 }
 
@@ -1673,7 +1671,7 @@ int CECCPrivateKey::DecryptMessage(unsigned char *pbOut, const unsigned char *pb
 
 //密钥协商第二步
 /**
- * pbMyRnd - 临时私钥
+ * pbMyRnd 
  * pbOtherRndMsg - 响应方的临时公钥
  * pOtherPublicKey - 响应方的公钥
  * */

@@ -20,6 +20,7 @@ void getRandom(unsigned char *rand, const int length);
 ULONG verifyKeyPair(const unsigned char *privateKey, const int priviteKeyLength,
                     const unsigned char *pubKey, const int pubKeyLength);
 
+
 ULONG computeKeyExchangeResult(unsigned char *key, int *keyLength, const unsigned char *sponsorPubKey,
                                const int sponsorPubKeyLength,
                                const char *sponsorID, const int sponsorIDLength,

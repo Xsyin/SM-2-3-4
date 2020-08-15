@@ -18,9 +18,6 @@ ULONG generateECCKeyPair(unsigned char *pubKey, ULONG *pubKeyLength, unsigned ch
     if (*pubKeyLength < SM2_PUB_KEY_LENGTH || *priKeyLength < SM2_PRI_KEY_LENGTH)
         return SAR_INDATALENERR;
 
-    getRandom(priKey, SM2_PRI_KEY_LENGTH);
-    *priKeyLength = SM2_PRI_KEY_LENGTH;
-
     int keylength = cc.KeyExchangeRndMsg(pubKey, priKey, *priKeyLength);
     if (0 == keylength)
         return SAR_COMPUTEERR;

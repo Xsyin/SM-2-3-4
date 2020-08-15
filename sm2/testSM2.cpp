@@ -56,6 +56,7 @@ int main(int argc, char const *argv[])
 
     HexStrToByte((char *)privatekey_str, privatekey, strlen((char*)privatekey_str));
 
+    printHexStr(privatekey, 32);
     if(verifyKeyPair(privatekey, 32, publickey, 64) != 0){
         printf("key pair error");
         return 0;
@@ -81,6 +82,78 @@ int main(int argc, char const *argv[])
     if(res != 0)
         return 0;
     printf("verifyed the message signature \n");
+
+    unsigned char *sponsorID = (unsigned char*)"1234567812345678";
+    unsigned char *responsorID =(unsigned char*) "1234567812345678";
+    unsigned char *sponsorPri_str = (unsigned char*)
+    "81EB26E941BB5AF16DF116495F90695272AE2CD63D6C4AE1678418BE48230029";
+    unsigned char sponsorPri[32] = {0};
+    HexStrToByte((char *)sponsorPri_str, sponsorPri, strlen((char *)sponsorPri_str));
+    unsigned char *sponsorPub_str = (unsigned char*)"160E12897DF4EDB61DD812FEB96748FBD3CCF4FFE26AA6F6DB9540AF49C942324A7DAD08BB9A459531694BEB20AA489D6649975E1BFCF8C4741B78B4B223007F";
+    unsigned char sponsorPub[64] = {0};
+    HexStrToByte((char *)sponsorPub_str, sponsorPub, strlen((char *)sponsorPub_str));
+    unsigned char *sponsor_rnd_str = (unsigned char*)"D4DE15474DB74D06491C440D305E012400990F3E390C7E87153C12DB2EA60BB3";
+    unsigned char sponsor_rnd[32] = {0};
+    ULONG sponsor_rndLen = 32;
+    HexStrToByte((char *)sponsor_rnd_str, sponsor_rnd, strlen((char *)sponsor_rnd_str));
+    unsigned char *responsorPri_str = (unsigned char*)"785129917D45A9EA5437A59356B82338EAADDA6CEB199088F14AE10DEFA229B5";
+    unsigned char responsorPri[32] = {0};
+    HexStrToByte((char *)responsorPri_str, responsorPri, strlen((char *)responsorPri_str));
+    unsigned char *responsorPub_str = (unsigned char*)"6AE848C57C53C7B1B5FA99EB2286AF078BA64C64591B8B566F7357D576F16DFBEE489D771621A27B36C5C7992062E9CD09A9264386F3FBEA54DFF69305621C4D";
+    unsigned char responsorPub[64] = {0};
+    HexStrToByte((char *)responsorPub_str, responsorPub, strlen((char *)responsorPub_str));
+    unsigned char *responsor_rnd_str = (unsigned char*)"7E07124814B309489125EAED101113164EBF0F3458C5BD88335C1F9D596243D6";
+     unsigned char responsor_rnd[32] = {0};
+     ULONG responsor_rndLen = 32;
+     HexStrToByte((char *)responsor_rnd_str, responsor_rnd, strlen((char *)responsor_rnd_str));
+     unsigned char tempResponorPub[64] = {0};
+     ULONG tempResponorPubLen = 64;
+     unsigned char tempSponorPub[64] = {0};
+     ULONG tempSponorPubLen = 64;
+     unsigned char sessionKey[16] = {0};
+     int sessionKeyLen = 16;
+
+     if(verifyKeyPair(sponsorPri, 32, sponsorPub, 64) != 0){
+        printf("key pair error");
+        return 0;
+     }
+
+     if(verifyKeyPair(responsorPri, 32, responsorPub, 64) != 0){
+        printf("key pair error");
+        return 0;
+    }
+     int err = 0;
+
+     // 响应方计算
+     generateECCKeyPair(tempSponorPub, &tempSponorPubLen, sponsor_rnd, &sponsor_rndLen);
+     printHexStr(tempSponorPub, tempSponorPubLen);
+     computeKeyExchangeResult(sessionKey, &sessionKeyLen, sponsorPub, 64, (char *)sponsorID, strlen((char *)sponsorID), tempSponorPub, tempSponorPubLen, responsorPub, 64, responsorPri, 32, responsor_rnd, 32, (char *)responsorID, strlen((char *)responsorID), false);
+     printf("responsor ----> sponsor: \n");
+     printHexStr(sessionKey, sessionKeyLen);
+
+     // 发起方计算
+     err = generateECCKeyPair(tempResponorPub, &tempResponorPubLen, responsor_rnd, &responsor_rndLen);
+     printHexStr(tempResponorPub, tempResponorPubLen);
+
+     err = computeKeyExchangeResult(sessionKey, &sessionKeyLen, responsorPub, 64, (char *)responsorID, strlen((char *)responsorID), tempResponorPub, tempResponorPubLen, sponsorPub, 64, sponsorPri, 32, sponsor_rnd, 32, (char *)sponsorID, strlen((char *)sponsorID), true);
+
+     printf("sponsor ----> responsor: \n");
+     printHexStr(sessionKey, sessionKeyLen);
+     
+  
+
+
+
+//      int lenA = CECCPrivateKey_GenerateKey(&keyA, random, rndLen);
+// 	int lenB = CECCPrivateKey_GenerateKey(&keyB, random, rndLen);
+// 	unsigned char out[512] = { 0 };
+// 	int keybLen = CECCPublicKey_ExportPublicKey(&keyB.publickey, out);
+// 	CECCPublicKey_SetPublicKey(&keyB.publickey, out, keybLen);
+// 	int msgLenB = CEllipticCurve_KeyExchangeRndMsg(rndMsgB, random2, rndLen);
+// 	unsigned char sessionKey[64] = { 0 };
+// 	int sessionKeyLen = CECCPrivateKey_KeyExchangeResult(&keyA, sessionKey, 32, random, rndLen, usernameA, usernameLen, rndMsgB, msgLenB,
+// 			&keyB.publickey, usernameB, usernameLen, 1);   
+         
 
     return 0;
 }
