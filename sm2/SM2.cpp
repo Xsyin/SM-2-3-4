@@ -11,25 +11,24 @@
 
 CEllipticCurve cc;
 
-ULONG generateECCKeyPair(unsigned char *pubKey, ULONG *pubKeyLength, unsigned char *priKey,
-                         ULONG *priKeyLength) {
-    if (NULL == pubKey || NULL == priKey || NULL == pubKeyLength || NULL == priKeyLength)
+ULONG generateKeyExchangeMsg(unsigned char *tempMsg, ULONG *tempMsgLength, unsigned char *rnd, ULONG *rndLength) {
+    if (NULL == tempMsg || NULL == rnd || NULL == tempMsgLength || NULL == rndLength)
         return SAR_INDATAERR;
-    if (*pubKeyLength < SM2_PUB_KEY_LENGTH || *priKeyLength < SM2_PRI_KEY_LENGTH)
+    if (*tempMsgLength < SM2_PUB_KEY_LENGTH || *rndLength < SM2_PRI_KEY_LENGTH)
         return SAR_INDATALENERR;
 
-    int keylength = cc.KeyExchangeRndMsg(pubKey, priKey, *priKeyLength);
+    int keylength = cc.KeyExchangeRndMsg(tempMsg, rnd, *rndLength);
     if (0 == keylength)
         return SAR_COMPUTEERR;
 
     //判断p1点是否满足要求
     CMpi P2_X_mpi, P2_Y_mpi;
-    P2_X_mpi.Import(pubKey, keylength / 2);
-    P2_Y_mpi.Import(pubKey + keylength / 2, keylength / 2);
+    P2_X_mpi.Import(tempMsg, keylength / 2);
+    P2_Y_mpi.Import(tempMsg + keylength / 2, keylength / 2);
     if (0 == cc.CheckPoint(P2_X_mpi, P2_Y_mpi))
         return SAR_COMPUTEERR;
 
-    *pubKeyLength = keylength;
+    *tempMsgLength = keylength;
     return SAR_OK;
 }
 

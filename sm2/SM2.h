@@ -12,8 +12,7 @@ ULONG encryptMessage(unsigned char *cipher, ULONG *cipherLength, const unsigned 
 ULONG decryptMessage(unsigned char *plain, ULONG *plainLength, const unsigned char *priKey,
                      const int priKeyLength, const unsigned char *cipher, const ULONG cipherLength);
 
-ULONG generateECCKeyPair(unsigned char *pubKey, ULONG *pubKeyLength, unsigned char *priKey,
-                         ULONG *priKeyLength);
+ULONG generateKeyExchangeMsg(unsigned char *tempMsg, ULONG *tempMsgLength, unsigned char *rnd, ULONG *rndLength);
 
 void getRandom(unsigned char *rand, const int length);
 

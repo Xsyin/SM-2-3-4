@@ -106,10 +106,10 @@ int main(int argc, char const *argv[])
      unsigned char responsor_rnd[32] = {0};
      ULONG responsor_rndLen = 32;
      HexStrToByte((char *)responsor_rnd_str, responsor_rnd, strlen((char *)responsor_rnd_str));
-     unsigned char tempResponorPub[64] = {0};
-     ULONG tempResponorPubLen = 64;
-     unsigned char tempSponorPub[64] = {0};
-     ULONG tempSponorPubLen = 64;
+     unsigned char tempResponorMsg[64] = {0};
+     ULONG tempResponorMsgLen = 64;
+     unsigned char tempSponorMsg[64] = {0};
+     ULONG tempSponorMsgLen = 64;
      unsigned char sessionKey[16] = {0};
      int sessionKeyLen = 16;
 
@@ -125,17 +125,17 @@ int main(int argc, char const *argv[])
      int err = 0;
 
      // 响应方计算
-     generateECCKeyPair(tempSponorPub, &tempSponorPubLen, sponsor_rnd, &sponsor_rndLen);
-     printHexStr(tempSponorPub, tempSponorPubLen);
-     computeKeyExchangeResult(sessionKey, &sessionKeyLen, sponsorPub, 64, (char *)sponsorID, strlen((char *)sponsorID), tempSponorPub, tempSponorPubLen, responsorPub, 64, responsorPri, 32, responsor_rnd, 32, (char *)responsorID, strlen((char *)responsorID), false);
+     generateKeyExchangeMsg(tempSponorMsg, &tempSponorMsgLen, sponsor_rnd, &sponsor_rndLen);
+     printHexStr(tempSponorMsg, tempSponorMsgLen);
+     computeKeyExchangeResult(sessionKey, &sessionKeyLen, sponsorPub, 64, (char *)sponsorID, strlen((char *)sponsorID), tempSponorMsg, tempSponorMsgLen, responsorPub, 64, responsorPri, 32, responsor_rnd, 32, (char *)responsorID, strlen((char *)responsorID), false);
      printf("responsor ----> sponsor: \n");
      printHexStr(sessionKey, sessionKeyLen);
 
      // 发起方计算
-     err = generateECCKeyPair(tempResponorPub, &tempResponorPubLen, responsor_rnd, &responsor_rndLen);
-     printHexStr(tempResponorPub, tempResponorPubLen);
+     err = generateKeyExchangeMsg(tempResponorMsg, &tempResponorMsgLen, responsor_rnd, &responsor_rndLen);
+     printHexStr(tempResponorMsg, tempResponorMsgLen);
 
-     err = computeKeyExchangeResult(sessionKey, &sessionKeyLen, responsorPub, 64, (char *)responsorID, strlen((char *)responsorID), tempResponorPub, tempResponorPubLen, sponsorPub, 64, sponsorPri, 32, sponsor_rnd, 32, (char *)sponsorID, strlen((char *)sponsorID), true);
+     err = computeKeyExchangeResult(sessionKey, &sessionKeyLen, responsorPub, 64, (char *)responsorID, strlen((char *)responsorID), tempResponorMsg, tempResponorMsgLen, sponsorPub, 64, sponsorPri, 32, sponsor_rnd, 32, (char *)sponsorID, strlen((char *)sponsorID), true);
 
      printf("sponsor ----> responsor: \n");
      printHexStr(sessionKey, sessionKeyLen);
